@@ -146,6 +146,7 @@ const Content: React.FC = () => {
               const optimalValueB = b.price * b.duration;
               return optimalValueA - optimalValueB;
           });
+          sortBy;
       }
   
       setTickets(sortedTickets);
