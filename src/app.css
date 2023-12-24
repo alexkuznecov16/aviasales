@@ -1,0 +1,22 @@
+* {
+    margin: 0;
+    padding: 0;
+    outline: none !important;
+    box-sizing: border-box;
+    font-family: Inter !important;
+}
+
+img {
+    -webkit-user-select: none !important;
+    user-select: none !important;
+}
+body {
+    padding: 30px 0;
+    font-family: Inter !important;
+}
+
+.AppBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
