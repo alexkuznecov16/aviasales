@@ -14,7 +14,7 @@ export interface Ticket {
     id: number;
     from: string;
     to: string;
-    company: string;
+    company: 'AirBaltic' | 'Ryanair' | 'Ernest airlines';
     imgURL: string;
     price: number;
     currency: 'EUR' | 'USD' | 'RUB';
@@ -117,15 +117,16 @@ const Content: React.FC = () => {
     const [tickets, setTickets] = React.useState<Ticket[]>([]); // tickets array
     const [showMoreCount, setShowMoreCount] = React.useState<number>(3); // show more tickets
     const [filterStops, setFilterStops] = React.useState<number[]>([]); // filters by stops
-    const [filterCompanies, setFilterCompanies] = React.useState<string[]>(['AirBaltic', 'Ryanair', 'Ernest airlines']); // filters by companies
+    const [filterCompanies, setFilterCompanies] = React.useState<string[]>([]);
+    ['AirBaltic', 'Ryanair', 'Ernest airlines']; // filters by companies
     const [sortBy, setSortBy] = React.useState<string | null>(null); // sorting by criteria
     const [filteredTickets, setFilteredTickets] = React.useState<Ticket[]>([]); // filtered tickets array
 
     // returns tickets data
     React.useEffect(() => {
         const fetchData = async () => {
-            const loadedTickets: any = await loadTicketsFromAPI();
-            const sortedTickets = loadedTickets.sort((a: any, b: any) => a.id - b.id);
+            const loadedTickets = await loadTicketsFromAPI();
+            const sortedTickets = loadedTickets.sort((a, b) => a.id - b.id);
             setTickets(sortedTickets);
             setFilteredTickets(sortedTickets);
         };
@@ -134,23 +135,23 @@ const Content: React.FC = () => {
 
     // Sort tickets by criteria
     const sortTickets = (criteria: string) => {
-      let sortedTickets = [...filteredTickets]; // sorted tickets props
-      
-      if (criteria === 'cheapest') {
-          sortedTickets = sortedTickets.sort((a, b) => a.price - b.price);
-      } else if (criteria === 'fastest') {
-          sortedTickets = sortedTickets.sort((a, b) => a.duration - b.duration);
-      } else if (criteria === 'optimal') {
-          sortedTickets = sortedTickets.sort((a, b) => {
-              const optimalValueA = a.price * a.duration;
-              const optimalValueB = b.price * b.duration;
-              return optimalValueA - optimalValueB;
-          });
-          sortBy;
-      }
-  
-      setTickets(sortedTickets);
-  };
+        let sortedTickets = [...filteredTickets]; // sorted tickets props
+
+        if (criteria === 'cheapest') {
+            sortedTickets = sortedTickets.sort((a, b) => a.price - b.price);
+        } else if (criteria === 'fastest') {
+            sortedTickets = sortedTickets.sort((a, b) => a.duration - b.duration);
+        } else if (criteria === 'optimal') {
+            sortedTickets = sortedTickets.sort((a, b) => {
+                const optimalValueA = a.price * a.duration;
+                const optimalValueB = b.price * b.duration;
+                return optimalValueA - optimalValueB;
+            });
+            sortBy;
+        }
+
+        setFilteredTickets(sortedTickets);
+    };
 
     // sort tickets by criteria
     const handleSortChange = (criteria: string) => {
@@ -202,13 +203,11 @@ const Content: React.FC = () => {
                 setFilterStops((prevFilterStops) => prevFilterStops.filter((stop) => stop !== stopValue)); // if works - remove stopValue from filters settings
             }
         } else if (input.name === 'companies') {
-            const companyValue = input.value; // get the company name
+            const companyValue = input.value;
             if (input.checked) {
-                // if input is active clicked
-                setFilterCompanies((prevFilterCompanies) => [...prevFilterCompanies, companyValue]); // set companies filters. - open prevFilterCompanies and add companyValue
+                setFilterCompanies((prevFilterCompanies) => [...prevFilterCompanies, companyValue]);
             } else {
-                // if input is not active
-                setFilterCompanies((prevFilterCompanies) => prevFilterCompanies.filter((company) => company !== companyValue)); // if works - remove companyValue from filters settings
+                setFilterCompanies((prevFilterCompanies) => prevFilterCompanies.filter((company) => company !== companyValue));
             }
         }
     };
@@ -273,33 +272,39 @@ const Content: React.FC = () => {
                             <span onClick={() => handleSortChange('optimal')}>The most optimal</span>
                         </div>
                         <div className='offers'>
-                            {tickets.slice(0, showMoreCount).map((ticket) => (
+                            {filteredTickets.slice(0, showMoreCount).map((ticket) => (
                                 <div key={ticket.id} className='offer'>
-                                <div className='offer-list'>
-                                    <span className='item-1 price'>
-                                        {ticket.price} {ticket.currency}
-                                    </span>
-                                    <span className='item-2 locations'>
-                                        {ticket.from} - {ticket.to}
-                                    </span>
-                                    <span className='item-3 times'>
-                                        {ticket.time.startTime} - {ticket.time.endTime}
-                                    </span>
+                                    <div className='offer-list'>
+                                        <span className='item-1 price'>
+                                            {ticket.price} {ticket.currency}
+                                        </span>
+                                        <span className='item-2 locations'>
+                                            {ticket.from} - {ticket.to}
+                                        </span>
+                                        <span className='item-3 times'>
+                                            {ticket.time.startTime} - {ticket.time.endTime}
+                                        </span>
+                                    </div>
+                                    <div className='offer-list'>
+                                        <span className='item-2 text'>In the way</span>
+                                        <span className='item-3 times'>{ticket.duration} h 0 min</span>
+                                    </div>
+                                    <div className='offer-list'>
+                                        <img className='item-1 company company-logo' src={ticket.imgURL} alt={ticket.company} />
+                                        <span className='item-2 text'>Transfers</span>
+                                        <span className='item-3 transfers'>
+                                            {ticket.connectionAmount} {ticket.connectionAmount == 1 ? 'tranfer' : 'transfers'}
+                                        </span>
+                                    </div>
                                 </div>
-                                <div className='offer-list'>
-                                    <span className='item-2 text'>In the way</span>
-                                    <span className='item-3 times'>{ticket.duration} h 0 min</span>
-                                </div>
-                                <div className='offer-list'>
-                                    <img className='item-1 company company-logo' src={ticket.imgURL} alt={ticket.company} />
-                                    <span className='item-2 text'>Transfers</span>
-                                    <span className='item-3 transfers'>
-                                        {ticket.connectionAmount} {ticket.connectionAmount == 1 ? 'tranfer' : 'transfers'}
-                                    </span>
-                                </div>
-                            </div>
                             ))}
-                            {showMoreCount < tickets.length ? <button className='showMoreBTN' onClick={handleShowMore}>Show more</button> : ''}
+                            {showMoreCount < filteredTickets.length ? (
+                                <button className='showMoreBTN' onClick={handleShowMore}>
+                                    Show more
+                                </button>
+                            ) : (
+                                ''
+                            )}
                         </div>
                     </div>
                 </div>
