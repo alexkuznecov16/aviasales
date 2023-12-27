@@ -4,6 +4,7 @@ import './Content.css';
 import airBaltic_icon from '../../assets/airBaltic.png';
 import ernestAirlines_icon from '../../assets/ErnestAirlines.png';
 import ryanair_icon from '../../assets/Ryanair.png';
+import FilterBlock from '../../modules/FilterBlock';
 
 export interface TicketTime {
     startTime: string;
@@ -101,6 +102,45 @@ const mockTickets: Ticket[] = [
         time: { startTime: '16:30', endTime: '18:45' },
         duration: 2.25,
         date: '2023-12-30',
+        connectionAmount: 0,
+    },
+    {
+        id: 7,
+        from: 'Riga',
+        to: 'Minsk',
+        company: 'AirBaltic',
+        imgURL: airBaltic_icon,
+        price: 150,
+        currency: 'EUR',
+        time: { startTime: '16:30', endTime: '17:10' },
+        duration: 0.4,
+        date: '2024-01-22',
+        connectionAmount: 0,
+    },
+    {
+        id: 8,
+        from: 'Riga',
+        to: 'Moscow',
+        company: 'AirBaltic',
+        imgURL: airBaltic_icon,
+        price: 300,
+        currency: 'EUR',
+        time: { startTime: '00:30', endTime: '02:00' },
+        duration: 1.3,
+        date: '2024-01-26',
+        connectionAmount: 0,
+    },
+    {
+        id: 9,
+        from: 'Moscow',
+        to: 'Riga',
+        company: 'Ryanair',
+        imgURL: ryanair_icon,
+        price: 29090,
+        currency: 'RUB',
+        time: { startTime: '06:30', endTime: '08:00' },
+        duration: 1.3,
+        date: '2024-01-29',
         connectionAmount: 0,
     },
 ];
@@ -225,52 +265,14 @@ const Content: React.FC = () => {
         <div className='content-app'>
             <div className='container'>
                 <div className='blocks'>
-                    <div className='filter-block'>
-                        <div className='filter-block__item'>
-                            <h3>Количество пересадок</h3>
-                            <div className='filter-settings'>
-                                <div className='input-item'>
-                                    <input id='without' type='checkbox' name='stops' value={0} onChange={handleFilterChange} />
-                                    <label htmlFor='without'>Без пересадок</label>
-                                </div>
-                                <div className='input-item'>
-                                    <input id='transfer1' type='checkbox' name='stops' value={1} onChange={handleFilterChange} />
-                                    <label htmlFor='transfer1'>1 пересадка</label>
-                                </div>
-                                <div className='input-item'>
-                                    <input id='transfer2' type='checkbox' name='stops' value={2} onChange={handleFilterChange} />
-                                    <label htmlFor='transfer2'>2 пересадки</label>
-                                </div>
-                                <div className='input-item'>
-                                    <input id='transfer3' type='checkbox' name='stops' value={3} onChange={handleFilterChange} />
-                                    <label htmlFor='transfer3'>3 пересадки</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div className='filter-block__item'>
-                            <h3>Компании</h3>
-                            <div className='filter-settings'>
-                                <div className='input-item'>
-                                    <input id='airBaltic' type='checkbox' name='companies' value='AirBaltic' onChange={handleFilterChange} />
-                                    <label htmlFor='airBaltic'>Air Baltic</label>
-                                </div>
-                                <div className='input-item'>
-                                    <input id='ryanair' type='checkbox' name='companies' value='Ryanair' onChange={handleFilterChange} />
-                                    <label htmlFor='ryanair'>Ryanair</label>
-                                </div>
-                                <div className='input-item'>
-                                    <input id='ernestAirlines' type='checkbox' name='companies' value='Ernest airlines' onChange={handleFilterChange} />
-                                    <label htmlFor='ernestAirlines'>Ernest Airlines</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <FilterBlock filterCompanies={filterCompanies} filterStops={filterStops} handleFilterChange={handleFilterChange} />
                     <div className='offer-block'>
                         <div className='offer-filter'>
                             <span onClick={() => handleSortChange('cheapest')}>The cheapest</span>
                             <span onClick={() => handleSortChange('fastest')}>The fastest</span>
                             <span onClick={() => handleSortChange('optimal')}>The most optimal</span>
                         </div>
+                        {/* Доработать: все билеты добавить в отдельный компонент */}
                         <div className='offers'>
                             {filteredTickets.slice(0, showMoreCount).map((ticket) => (
                                 <div key={ticket.id} className='offer'>
@@ -287,7 +289,7 @@ const Content: React.FC = () => {
                                     </div>
                                     <div className='offer-list'>
                                         <span className='item-2 text'>In the way</span>
-                                        <span className='item-3 times'>{ticket.duration} h 0 min</span>
+                                        <span className='item-3 times'>{ticket.duration} h</span>
                                     </div>
                                     <div className='offer-list'>
                                         <img className='item-1 company company-logo' src={ticket.imgURL} alt={ticket.company} />
