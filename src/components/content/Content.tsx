@@ -4,7 +4,10 @@ import './Content.css';
 import airBaltic_icon from '../../assets/airBaltic.png';
 import ernestAirlines_icon from '../../assets/ErnestAirlines.png';
 import ryanair_icon from '../../assets/Ryanair.png';
+
 import FilterBlock from '../../modules/FilterBlock';
+import OfferList from '../../modules/OfferList';
+import OfferFilter from '../../modules/OfferFilter';
 
 export interface TicketTime {
     startTime: string;
@@ -165,13 +168,13 @@ const Content: React.FC = () => {
     // returns tickets data
     React.useEffect(() => {
         const fetchData = async () => {
-            const loadedTickets = await loadTicketsFromAPI();
-            const sortedTickets = loadedTickets.sort((a, b) => a.id - b.id);
-            setTickets(sortedTickets);
-            setFilteredTickets(sortedTickets);
+            const loadedTickets: Ticket[] = await loadTicketsFromAPI() as Ticket[];
+          const sortedTickets = loadedTickets.sort((a, b) => a.id - b.id);
+          setTickets(sortedTickets);
+          setFilteredTickets(sortedTickets);
         };
         fetchData();
-    }, []);
+      }, []);
 
     // Sort tickets by criteria
     const sortTickets = (criteria: string) => {
@@ -267,47 +270,8 @@ const Content: React.FC = () => {
                 <div className='blocks'>
                     <FilterBlock filterCompanies={filterCompanies} filterStops={filterStops} handleFilterChange={handleFilterChange} />
                     <div className='offer-block'>
-                        <div className='offer-filter'>
-                            <span onClick={() => handleSortChange('cheapest')}>The cheapest</span>
-                            <span onClick={() => handleSortChange('fastest')}>The fastest</span>
-                            <span onClick={() => handleSortChange('optimal')}>The most optimal</span>
-                        </div>
-                        {/* Доработать: все билеты добавить в отдельный компонент */}
-                        <div className='offers'>
-                            {filteredTickets.slice(0, showMoreCount).map((ticket) => (
-                                <div key={ticket.id} className='offer'>
-                                    <div className='offer-list'>
-                                        <span className='item-1 price'>
-                                            {ticket.price} {ticket.currency}
-                                        </span>
-                                        <span className='item-2 locations'>
-                                            {ticket.from} - {ticket.to}
-                                        </span>
-                                        <span className='item-3 times'>
-                                            {ticket.time.startTime} - {ticket.time.endTime}
-                                        </span>
-                                    </div>
-                                    <div className='offer-list'>
-                                        <span className='item-2 text'>In the way</span>
-                                        <span className='item-3 times'>{ticket.duration} h</span>
-                                    </div>
-                                    <div className='offer-list'>
-                                        <img className='item-1 company company-logo' src={ticket.imgURL} alt={ticket.company} />
-                                        <span className='item-2 text'>Transfers</span>
-                                        <span className='item-3 transfers'>
-                                            {ticket.connectionAmount} {ticket.connectionAmount == 1 ? 'tranfer' : 'transfers'}
-                                        </span>
-                                    </div>
-                                </div>
-                            ))}
-                            {showMoreCount < filteredTickets.length ? (
-                                <button className='showMoreBTN' onClick={handleShowMore}>
-                                    Show more
-                                </button>
-                            ) : (
-                                ''
-                            )}
-                        </div>
+                        <OfferFilter handleSortChange={handleSortChange}/>
+                        <OfferList filteredTickets={filteredTickets} handleShowMore={handleShowMore} showMoreCount={showMoreCount} />
                     </div>
                 </div>
             </div>
